@@ -1,0 +1,12 @@
+node_modules/
+vendor/
+.env
+.env.local
+coverage/
+backend/coverage/
+frontend/coverage/
+backend/.phpunit.result.cache
+frontend/dist/
+backend/storage/logs/*.log
+PROJECT_PLAN.md
+vaga.md
