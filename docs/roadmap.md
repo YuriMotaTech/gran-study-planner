@@ -22,6 +22,7 @@
 - [ ] Weekly goal tracking and progress charts
 - [ ] Activity event log adapter
 - [ ] Notification channels (email/calendar export)
+- [ ] Email notifications: daily study summary (due soon, overdue, and progress by status)
 
 ## v0.4.0 - Portfolio polish
 - [ ] Seed data command

@@ -9,6 +9,56 @@ This repository simulates a real-world educational planning product and demonstr
 - frontend state management and component testing,
 - incremental delivery with roadmap and CI.
 
+## Use case (PT/EN)
+
+### Caso de uso (PT-BR)
+O Gran Study Planner é uma ferramenta simples de planejamento de estudos que ajuda estudantes a criar, acompanhar e gerenciar planos de estudo diários com **status** e **prazos**.
+
+**Funcionalidades principais**
+- Login básico (demo com credenciais fixas — veja `Default login`)
+- Dashboard com visão geral: totais por status (pendente, em andamento, concluído, atrasado)
+- CRUD de planos de estudo: criar plano com título e data limite, listar com filtros (status, ordenação, paginação), editar status, deletar
+- Job automático de atraso: um cron marca planos vencidos como “atrasados” (veja `Cron`)
+
+**Exemplo de uso (estudante)**
+- Loga → vê no dashboard 3 pendentes, 2 em andamento, 0 atrasados
+- Cria o plano “Direito Constitucional — art. 5º” com prazo para amanhã
+- Marca como “em andamento” quando começa a estudar
+- Se não concluir até amanhã, o sistema marca automaticamente como “atrasado”
+- No dashboard, vê o progresso e prioriza o que está atrasado primeiro
+
+**Como ajuda o usuário**
+- Organização visual: o dashboard mostra exatamente o que precisa de atenção hoje
+- Automação de status: não precisa lembrar de marcar planos vencidos
+- Filtros inteligentes: foca só nos “atrasados” ou “pendentes”
+- Progresso mensurável: vê quantos planos concluiu vs. total
+
+É tipo um “Gerenciador de Estudos” simplificado, mas com arquitetura moderna (**hexagonal no PHP**, **React/TS no front**) para demonstrar domínio da stack.
+
+### Use case (EN)
+Gran Study Planner is a simple study planning tool that helps students create, track, and manage daily study plans with **statuses** and **deadlines**.
+
+**Key features**
+- Basic login (demo with fixed credentials — see `Default login`)
+- Dashboard overview: totals by status (pending, in progress, done, overdue)
+- Study plan CRUD: create plans with title/deadline, list with filters (status, sorting, pagination), update status, delete
+- Automatic overdue marking: a daily cron job marks expired plans as “overdue” (see `Cron`)
+
+**Example flow (student)**
+- Logs in → sees 3 pending, 2 in progress, 0 overdue on the dashboard
+- Creates “Constitutional Law — art. 5” with a deadline for tomorrow
+- Marks it as “in progress” when starting the session
+- If not completed by tomorrow, the system automatically marks it as “overdue”
+- Uses the dashboard to track progress and prioritize overdue items first
+
+**How it helps**
+- Visual organization: the dashboard makes priorities obvious
+- Status automation: no need to manually tag expired plans
+- Smart filters: focus on “overdue” or “pending” only
+- Measurable progress: completed vs. total at a glance
+
+It’s a lightweight “Study Manager” concept, built with a modern stack (**hexagonal PHP backend**, **React/TypeScript frontend**) to demonstrate real-world architecture skills.
+
 ## Tech stack
 - Backend: PHP 8.3, PHPUnit
 - Frontend: React 19, TypeScript, Vite, Vitest, RTL, Tailwind
