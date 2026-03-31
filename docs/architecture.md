@@ -3,6 +3,13 @@
 ## Context
 Gran Study Planner is a full-stack portfolio project aligned with a junior full-stack role requiring PHP, React, TypeScript, REST, cron, MySQL, Redis, Docker, and Gitflow.
 
+**Estado atual (resumo)**:
+- Backend hexagonal com `Kernel` HTTP, autenticação por token, cache de dashboard (Redis opcional), rate limiting por usuário/rota, validação de request na camada Interface.
+- Metas semanais (`weekly_goals`) e progresso semanal derivado de `study_plans` com janela ISO; progresso usa `updated_at` como proxy até existir **Activity event log** (ver roadmap v0.3.0).
+- CI: GitHub Actions roda PHPUnit (somente `tests/Unit` por enquanto) e Vitest + build do frontend.
+- **Referências visuais**: pasta local `ref/` (ignorada no Git) com HTML de referência para alinhar telas; não faz parte do build.
+- **Fluxo Git**: preferir branches de feature e PRs — ver [contributing.md](contributing.md).
+
 ## Hexagonal design
 - `Domain`: entities, invariants, and ports.
 - `Application`: use cases orchestrating business flows.
