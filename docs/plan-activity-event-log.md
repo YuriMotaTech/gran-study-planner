@@ -1,4 +1,6 @@
-# Plano técnico: Activity event log adapter (próximo passo v0.3.0)
+# Plano técnico: Activity event log adapter (v0.3.0)
+
+**Status:** implementado (tabela `activity_events`, porta `ActivityEventLogInterface`, adapter MySQL, emissão nos use cases, progresso semanal via `MySQLActivityWeeklyProgressRepository`).
 
 ## Objetivo
 Registrar eventos de domínio (criação de plano, mudança de status, exclusão, marcação overdue pelo cron, etc.) de forma **append-only**, para:

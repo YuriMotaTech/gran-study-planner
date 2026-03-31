@@ -19,6 +19,8 @@ use GranStudyPlanner\Infrastructure\Auth\SimpleJwtTokenEncoder;
 use GranStudyPlanner\Infrastructure\Cache\NullDashboardCache;
 use GranStudyPlanner\Infrastructure\Cache\RedisDashboardCache;
 use GranStudyPlanner\Infrastructure\Logging\FileLogger;
+use GranStudyPlanner\Infrastructure\Persistence\MySQLActivityEventLogRepository;
+use GranStudyPlanner\Infrastructure\Persistence\MySQLActivityWeeklyProgressRepository;
 use GranStudyPlanner\Infrastructure\Persistence\MySQLStudyPlanRepository;
 use GranStudyPlanner\Infrastructure\Persistence\MySQLWeeklyGoalsRepository;
 use GranStudyPlanner\Infrastructure\Persistence\UuidGenerator;
@@ -38,6 +40,9 @@ $pdo = new PDO(
 
 $repository = new MySQLStudyPlanRepository($pdo);
 $weeklyGoalsRepo = new MySQLWeeklyGoalsRepository($pdo);
+$uuidGenerator = new UuidGenerator();
+$activityLog = new MySQLActivityEventLogRepository($pdo, $uuidGenerator);
+$weeklyProgressRepo = new MySQLActivityWeeklyProgressRepository($pdo);
 
 $cache = new NullDashboardCache();
 $rateLimiter = new InMemoryRateLimiter();
@@ -62,14 +67,14 @@ $kernel = new Kernel(
         defaultUserId: 1,
         ttlSeconds: (int) $env('AUTH_TOKEN_TTL', '3600'),
     ),
-    createStudyPlanUseCase: new CreateStudyPlanUseCase($repository, new UuidGenerator(), $cache),
+    createStudyPlanUseCase: new CreateStudyPlanUseCase($repository, $uuidGenerator, $cache, $activityLog),
     listStudyPlansUseCase: new ListStudyPlansUseCase($repository),
-    updateStudyPlanStatusUseCase: new UpdateStudyPlanStatusUseCase($repository, $cache),
-    deleteStudyPlanUseCase: new DeleteStudyPlanUseCase($repository, $cache),
+    updateStudyPlanStatusUseCase: new UpdateStudyPlanStatusUseCase($repository, $cache, $activityLog),
+    deleteStudyPlanUseCase: new DeleteStudyPlanUseCase($repository, $cache, $activityLog),
     getDashboardUseCase: new GetDashboardUseCase($repository, $cache, (int) $env('DASHBOARD_CACHE_TTL', '120')),
     getWeeklyGoalsUseCase: new GetWeeklyGoalsUseCase($weeklyGoalsRepo),
     upsertWeeklyGoalsUseCase: new UpsertWeeklyGoalsUseCase($weeklyGoalsRepo),
-    getWeeklyProgressUseCase: new GetWeeklyProgressUseCase($repository, $weeklyGoalsRepo),
+    getWeeklyProgressUseCase: new GetWeeklyProgressUseCase($weeklyProgressRepo, $weeklyGoalsRepo),
     auth: new AuthMiddleware($tokenEncoder),
     rateLimiter: $rateLimiter,
     logger: $logger,

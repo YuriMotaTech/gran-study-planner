@@ -5,7 +5,9 @@ declare(strict_types=1);
 use GranStudyPlanner\Application\MarkOverduePlans\MarkOverduePlansUseCase;
 use GranStudyPlanner\Infrastructure\Cache\NullDashboardCache;
 use GranStudyPlanner\Infrastructure\Cron\MarkOverdueJob;
+use GranStudyPlanner\Infrastructure\Persistence\MySQLActivityEventLogRepository;
 use GranStudyPlanner\Infrastructure\Persistence\MySQLStudyPlanRepository;
+use GranStudyPlanner\Infrastructure\Persistence\UuidGenerator;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -18,6 +20,7 @@ $pdo = new PDO(
 );
 
 $repository = new MySQLStudyPlanRepository($pdo);
-$job = new MarkOverdueJob(new MarkOverduePlansUseCase($repository, new NullDashboardCache()));
+$activityLog = new MySQLActivityEventLogRepository($pdo, new UuidGenerator());
+$job = new MarkOverdueJob(new MarkOverduePlansUseCase($repository, new NullDashboardCache(), $activityLog));
 $count = $job->run();
 echo sprintf("Marked %d overdue plans.\n", $count);
