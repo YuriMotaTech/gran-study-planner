@@ -1,4 +1,4 @@
-import type { DashboardStats, StudyPlan, StudyPlanStatus } from '../types/StudyPlan';
+import type { DashboardStats, StudyPlan, StudyPlanStatus, WeeklyGoals, WeeklyProgress } from '../types/StudyPlan';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 const TOKEN_KEY = 'gsp.token';
@@ -52,5 +52,26 @@ export const api = {
     body: JSON.stringify({ status })
   }),
   deleteStudyPlan: async (id: string) => request<{ status: string }>(`/study-plans/${id}`, { method: 'DELETE' }),
-  dashboard: async () => request<{ stats: DashboardStats }>('/dashboard')
+  dashboard: async () => request<{ stats: DashboardStats }>('/dashboard'),
+  weeklyGoals: async (week?: string) => {
+    const params = new URLSearchParams();
+    if (week) params.set('week', week);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    return request<{ week: string; goals: WeeklyGoals }>(`/weekly-goals${suffix}`);
+  },
+  upsertWeeklyGoals: async (goals: WeeklyGoals, week?: string) => {
+    const params = new URLSearchParams();
+    if (week) params.set('week', week);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    return request<{ status: string; week: string; goals: WeeklyGoals }>(`/weekly-goals${suffix}`, {
+      method: 'PUT',
+      body: JSON.stringify(goals)
+    });
+  },
+  weeklyProgress: async (week?: string) => {
+    const params = new URLSearchParams();
+    if (week) params.set('week', week);
+    const suffix = params.toString() ? `?${params.toString()}` : '';
+    return request<WeeklyProgress>(`/weekly-progress${suffix}`);
+  }
 };

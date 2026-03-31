@@ -9,6 +9,9 @@ use GranStudyPlanner\Application\DeleteStudyPlan\DeleteStudyPlanUseCase;
 use GranStudyPlanner\Application\ListStudyPlans\ListStudyPlansUseCase;
 use GranStudyPlanner\Application\MarkOverduePlans\MarkOverduePlansUseCase;
 use GranStudyPlanner\Application\UpdateStudyPlanStatus\UpdateStudyPlanStatusUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyGoalsUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyProgressUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\UpsertWeeklyGoalsUseCase;
 use GranStudyPlanner\Interface\Http\AuthMiddleware;
 use GranStudyPlanner\Interface\Http\Kernel;
 use GranStudyPlanner\Interface\Http\Request;
@@ -17,6 +20,7 @@ use GranStudyPlanner\Infrastructure\Cache\NullDashboardCache;
 use GranStudyPlanner\Infrastructure\Cache\RedisDashboardCache;
 use GranStudyPlanner\Infrastructure\Logging\FileLogger;
 use GranStudyPlanner\Infrastructure\Persistence\MySQLStudyPlanRepository;
+use GranStudyPlanner\Infrastructure\Persistence\MySQLWeeklyGoalsRepository;
 use GranStudyPlanner\Infrastructure\Persistence\UuidGenerator;
 use GranStudyPlanner\Infrastructure\RateLimiting\InMemoryRateLimiter;
 use GranStudyPlanner\Infrastructure\RateLimiting\RedisRateLimiter;
@@ -33,6 +37,7 @@ $pdo = new PDO(
 );
 
 $repository = new MySQLStudyPlanRepository($pdo);
+$weeklyGoalsRepo = new MySQLWeeklyGoalsRepository($pdo);
 
 $cache = new NullDashboardCache();
 $rateLimiter = new InMemoryRateLimiter();
@@ -62,6 +67,9 @@ $kernel = new Kernel(
     updateStudyPlanStatusUseCase: new UpdateStudyPlanStatusUseCase($repository, $cache),
     deleteStudyPlanUseCase: new DeleteStudyPlanUseCase($repository, $cache),
     getDashboardUseCase: new GetDashboardUseCase($repository, $cache, (int) $env('DASHBOARD_CACHE_TTL', '120')),
+    getWeeklyGoalsUseCase: new GetWeeklyGoalsUseCase($weeklyGoalsRepo),
+    upsertWeeklyGoalsUseCase: new UpsertWeeklyGoalsUseCase($weeklyGoalsRepo),
+    getWeeklyProgressUseCase: new GetWeeklyProgressUseCase($repository, $weeklyGoalsRepo),
     auth: new AuthMiddleware($tokenEncoder),
     rateLimiter: $rateLimiter,
     logger: $logger,

@@ -12,11 +12,16 @@ use GranStudyPlanner\Application\Dashboard\GetDashboardUseCase;
 use GranStudyPlanner\Application\DeleteStudyPlan\DeleteStudyPlanUseCase;
 use GranStudyPlanner\Application\ListStudyPlans\ListStudyPlansUseCase;
 use GranStudyPlanner\Application\UpdateStudyPlanStatus\UpdateStudyPlanStatusUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyGoalsUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyProgressUseCase;
+use GranStudyPlanner\Application\WeeklyGoals\UpsertWeeklyGoalsUseCase;
 use GranStudyPlanner\Interface\Http\RateLimiting\RateLimiterInterface;
 use GranStudyPlanner\Interface\Http\Requests\CreateStudyPlanRequest;
 use GranStudyPlanner\Interface\Http\Requests\DeleteStudyPlanRequest;
 use GranStudyPlanner\Interface\Http\Requests\ListStudyPlansRequest;
+use GranStudyPlanner\Interface\Http\Requests\UpsertWeeklyGoalsRequest;
 use GranStudyPlanner\Interface\Http\Requests\UpdateStudyPlanStatusRequest;
+use GranStudyPlanner\Interface\Http\Requests\WeeklyWeekQuery;
 use GranStudyPlanner\Infrastructure\Logging\FileLogger;
 use Throwable;
 
@@ -29,6 +34,9 @@ final readonly class Kernel
         private UpdateStudyPlanStatusUseCase $updateStudyPlanStatusUseCase,
         private DeleteStudyPlanUseCase $deleteStudyPlanUseCase,
         private GetDashboardUseCase $getDashboardUseCase,
+        private GetWeeklyGoalsUseCase $getWeeklyGoalsUseCase,
+        private UpsertWeeklyGoalsUseCase $upsertWeeklyGoalsUseCase,
+        private GetWeeklyProgressUseCase $getWeeklyProgressUseCase,
         private AuthMiddleware $auth,
         private RateLimiterInterface $rateLimiter,
         private FileLogger $logger,
@@ -120,6 +128,28 @@ final readonly class Kernel
                 return;
             }
 
+            if ($request->path === '/weekly-goals' && $request->method === 'GET') {
+                $week = WeeklyWeekQuery::from($request);
+                $goals = $this->getWeeklyGoalsUseCase->execute($userId, $week);
+                JsonResponse::send(['week' => $week->value, 'goals' => $goals]);
+                return;
+            }
+
+            if ($request->path === '/weekly-goals' && $request->method === 'PUT') {
+                $week = WeeklyWeekQuery::from($request);
+                $goals = UpsertWeeklyGoalsRequest::from($request);
+                $this->upsertWeeklyGoalsUseCase->execute($userId, $week, $goals);
+                JsonResponse::send(['status' => 'ok', 'week' => $week->value, 'goals' => $goals]);
+                return;
+            }
+
+            if ($request->path === '/weekly-progress' && $request->method === 'GET') {
+                $week = WeeklyWeekQuery::from($request);
+                $progress = $this->getWeeklyProgressUseCase->execute($userId, $week);
+                JsonResponse::send($progress);
+                return;
+            }
+
             JsonResponse::send(['error' => 'Not found', 'requestId' => $requestId], 404);
         } catch (DomainException $e) {
             JsonResponse::send(['error' => $e->getMessage(), 'requestId' => $requestId], 422);
@@ -138,6 +168,15 @@ final readonly class Kernel
         }
         if ($request->path === '/dashboard' && $request->method === 'GET') {
             return ['routeKey' => '/dashboard', 'limit' => 60, 'windowSeconds' => 60];
+        }
+        if ($request->path === '/weekly-goals' && $request->method === 'GET') {
+            return ['routeKey' => '/weekly-goals:get', 'limit' => 60, 'windowSeconds' => 60];
+        }
+        if ($request->path === '/weekly-goals' && $request->method === 'PUT') {
+            return ['routeKey' => '/weekly-goals:put', 'limit' => 30, 'windowSeconds' => 60];
+        }
+        if ($request->path === '/weekly-progress' && $request->method === 'GET') {
+            return ['routeKey' => '/weekly-progress:get', 'limit' => 60, 'windowSeconds' => 60];
         }
         if ($request->path === '/study-plans' && $request->method === 'POST') {
             return ['routeKey' => '/study-plans', 'limit' => 30, 'windowSeconds' => 60];

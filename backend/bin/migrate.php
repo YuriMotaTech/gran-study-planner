@@ -11,10 +11,20 @@ $pdo = new PDO(
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
 );
 
-$sql = file_get_contents(__DIR__ . '/../database/migrations/001_create_study_plans.sql');
-if ($sql === false) {
-    throw new RuntimeException('Migration file not found.');
+$dir = __DIR__ . '/../database/migrations';
+$files = glob($dir . '/*.sql') ?: [];
+sort($files);
+
+if ($files === []) {
+    throw new RuntimeException('No migration files found.');
 }
 
-$pdo->exec($sql);
+foreach ($files as $file) {
+    $sql = file_get_contents($file);
+    if ($sql === false) {
+        throw new RuntimeException('Migration file not found: ' . $file);
+    }
+    $pdo->exec($sql);
+}
+
 echo "Migration complete.\n";

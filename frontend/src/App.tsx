@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { StudyPlanForm } from './components/StudyPlanForm';
 import { StudyPlanList } from './components/StudyPlanList';
+import { WeeklyGoalsPanel } from './components/WeeklyGoalsPanel';
 import { useStudyPlans } from './hooks/useStudyPlans';
 import { LoginPage } from './pages/LoginPage';
 import { api, authTokenStore } from './services/api';
@@ -40,6 +41,7 @@ export default function App() {
       </header>
 
       <Dashboard stats={stats} />
+      <WeeklyGoalsPanel />
 
       <section className="grid gap-4 md:grid-cols-2">
         <StudyPlanForm onSubmit={create} />
