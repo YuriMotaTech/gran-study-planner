@@ -18,6 +18,8 @@ use GranStudyPlanner\Infrastructure\Cache\RedisDashboardCache;
 use GranStudyPlanner\Infrastructure\Logging\FileLogger;
 use GranStudyPlanner\Infrastructure\Persistence\MySQLStudyPlanRepository;
 use GranStudyPlanner\Infrastructure\Persistence\UuidGenerator;
+use GranStudyPlanner\Infrastructure\RateLimiting\InMemoryRateLimiter;
+use GranStudyPlanner\Infrastructure\RateLimiting\RedisRateLimiter;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -33,11 +35,13 @@ $pdo = new PDO(
 $repository = new MySQLStudyPlanRepository($pdo);
 
 $cache = new NullDashboardCache();
+$rateLimiter = new InMemoryRateLimiter();
 if (class_exists('Redis')) {
     try {
         $redis = new Redis();
         $redis->connect($env('REDIS_HOST', '127.0.0.1'), (int) $env('REDIS_PORT', '6379'));
         $cache = new RedisDashboardCache($redis);
+        $rateLimiter = new RedisRateLimiter($redis);
     } catch (Throwable) {
     }
 }
@@ -59,6 +63,7 @@ $kernel = new Kernel(
     deleteStudyPlanUseCase: new DeleteStudyPlanUseCase($repository, $cache),
     getDashboardUseCase: new GetDashboardUseCase($repository, $cache, (int) $env('DASHBOARD_CACHE_TTL', '120')),
     auth: new AuthMiddleware($tokenEncoder),
+    rateLimiter: $rateLimiter,
     logger: $logger,
 );
 

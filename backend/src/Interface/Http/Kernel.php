@@ -7,14 +7,16 @@ namespace GranStudyPlanner\Interface\Http;
 use DateTimeImmutable;
 use DomainException;
 use GranStudyPlanner\Application\Auth\LoginUseCase;
-use GranStudyPlanner\Application\CreateStudyPlan\CreateStudyPlanInput;
 use GranStudyPlanner\Application\CreateStudyPlan\CreateStudyPlanUseCase;
 use GranStudyPlanner\Application\Dashboard\GetDashboardUseCase;
 use GranStudyPlanner\Application\DeleteStudyPlan\DeleteStudyPlanUseCase;
-use GranStudyPlanner\Application\ListStudyPlans\ListStudyPlansInput;
 use GranStudyPlanner\Application\ListStudyPlans\ListStudyPlansUseCase;
-use GranStudyPlanner\Application\UpdateStudyPlanStatus\UpdateStudyPlanStatusInput;
 use GranStudyPlanner\Application\UpdateStudyPlanStatus\UpdateStudyPlanStatusUseCase;
+use GranStudyPlanner\Interface\Http\RateLimiting\RateLimiterInterface;
+use GranStudyPlanner\Interface\Http\Requests\CreateStudyPlanRequest;
+use GranStudyPlanner\Interface\Http\Requests\DeleteStudyPlanRequest;
+use GranStudyPlanner\Interface\Http\Requests\ListStudyPlansRequest;
+use GranStudyPlanner\Interface\Http\Requests\UpdateStudyPlanStatusRequest;
 use GranStudyPlanner\Infrastructure\Logging\FileLogger;
 use Throwable;
 
@@ -28,6 +30,7 @@ final readonly class Kernel
         private DeleteStudyPlanUseCase $deleteStudyPlanUseCase,
         private GetDashboardUseCase $getDashboardUseCase,
         private AuthMiddleware $auth,
+        private RateLimiterInterface $rateLimiter,
         private FileLogger $logger,
     ) {}
 
@@ -56,25 +59,37 @@ final readonly class Kernel
                 return;
             }
 
+            $rateLimit = $this->rateLimitPolicy($request);
+            if ($rateLimit !== null) {
+                $result = $this->rateLimiter->attempt(
+                    key: sprintf('%d:%s:%s', $userId, $request->method, $rateLimit['routeKey']),
+                    limit: $rateLimit['limit'],
+                    windowSeconds: $rateLimit['windowSeconds'],
+                );
+                if (!$result->allowed) {
+                    JsonResponse::send(
+                        [
+                            'error' => 'Too Many Requests',
+                            'requestId' => $requestId,
+                            'retryAfterSeconds' => $result->retryAfterSeconds,
+                        ],
+                        429,
+                        ['Retry-After' => (string) $result->retryAfterSeconds],
+                    );
+                    return;
+                }
+            }
+
             if ($request->path === '/study-plans' && $request->method === 'POST') {
-                $plan = $this->createStudyPlanUseCase->execute(new CreateStudyPlanInput(
-                    userId: $userId,
-                    title: (string) ($request->body['title'] ?? ''),
-                    deadline: (string) ($request->body['deadline'] ?? ''),
-                ));
+                $input = CreateStudyPlanRequest::from($request, $userId);
+                $plan = $this->createStudyPlanUseCase->execute($input);
                 JsonResponse::send(['data' => StudyPlanPresenter::one($plan)], 201);
                 return;
             }
 
             if ($request->path === '/study-plans' && $request->method === 'GET') {
-                $result = $this->listStudyPlansUseCase->execute(new ListStudyPlansInput(
-                    userId: $userId,
-                    status: isset($request->query['status']) ? (string) $request->query['status'] : null,
-                    page: max(1, (int) ($request->query['page'] ?? 1)),
-                    perPage: min(100, max(1, (int) ($request->query['perPage'] ?? 20))),
-                    sortBy: (string) ($request->query['sortBy'] ?? 'deadline'),
-                    sortDirection: (string) ($request->query['sortDirection'] ?? 'asc'),
-                ));
+                $input = ListStudyPlansRequest::from($request, $userId);
+                $result = $this->listStudyPlansUseCase->execute($input);
 
                 JsonResponse::send([
                     'items' => array_map(static fn($plan) => StudyPlanPresenter::one($plan), $result['items']),
@@ -86,16 +101,14 @@ final readonly class Kernel
             }
 
             if (preg_match('#^/study-plans/([a-zA-Z0-9]+)$#', $request->path, $matches) === 1 && $request->method === 'PATCH') {
-                $this->updateStudyPlanStatusUseCase->execute(new UpdateStudyPlanStatusInput(
-                    userId: $userId,
-                    id: $matches[1],
-                    status: (string) ($request->body['status'] ?? ''),
-                ));
+                $input = UpdateStudyPlanStatusRequest::from($request, $userId, $matches[1]);
+                $this->updateStudyPlanStatusUseCase->execute($input);
                 JsonResponse::send(['status' => 'ok']);
                 return;
             }
 
             if (preg_match('#^/study-plans/([a-zA-Z0-9]+)$#', $request->path, $matches) === 1 && $request->method === 'DELETE') {
+                DeleteStudyPlanRequest::validate($matches[1]);
                 $this->deleteStudyPlanUseCase->execute($userId, $matches[1]);
                 JsonResponse::send(['status' => 'ok']);
                 return;
@@ -114,5 +127,28 @@ final readonly class Kernel
             $this->logger->error('Unhandled error', ['requestId' => $requestId, 'message' => $e->getMessage()]);
             JsonResponse::send(['error' => 'Internal server error', 'requestId' => $requestId], 500);
         }
+    }
+
+    /** @return array{routeKey:string,limit:int,windowSeconds:int}|null */
+    private function rateLimitPolicy(Request $request): ?array
+    {
+        // Defaults: simple per-minute limits, per user + routeKey.
+        if ($request->path === '/study-plans' && $request->method === 'GET') {
+            return ['routeKey' => '/study-plans', 'limit' => 60, 'windowSeconds' => 60];
+        }
+        if ($request->path === '/dashboard' && $request->method === 'GET') {
+            return ['routeKey' => '/dashboard', 'limit' => 60, 'windowSeconds' => 60];
+        }
+        if ($request->path === '/study-plans' && $request->method === 'POST') {
+            return ['routeKey' => '/study-plans', 'limit' => 30, 'windowSeconds' => 60];
+        }
+        if (preg_match('#^/study-plans/[a-zA-Z0-9]+$#', $request->path) === 1 && $request->method === 'PATCH') {
+            return ['routeKey' => '/study-plans/{id}:patch', 'limit' => 30, 'windowSeconds' => 60];
+        }
+        if (preg_match('#^/study-plans/[a-zA-Z0-9]+$#', $request->path) === 1 && $request->method === 'DELETE') {
+            return ['routeKey' => '/study-plans/{id}:delete', 'limit' => 30, 'windowSeconds' => 60];
+        }
+
+        return null;
     }
 }

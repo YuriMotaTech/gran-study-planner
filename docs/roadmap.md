@@ -14,8 +14,8 @@
 - [x] Pagination and sorting in list API
 - [x] Structured logs and `GET /health`
 - [x] CI pipeline for backend/frontend tests
-- [ ] Add rate limiting middleware
-- [ ] Add request validation abstraction
+- [x] Add rate limiting middleware
+- [x] Add request validation abstraction
 
 ## v0.3.0 - Product evolution
 - [ ] Recurrence templates
