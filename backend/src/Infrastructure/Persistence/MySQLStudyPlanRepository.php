@@ -8,11 +8,9 @@ use DateTimeImmutable;
 use GranStudyPlanner\Domain\StudyPlan\StudyPlan;
 use GranStudyPlanner\Domain\StudyPlan\StudyPlanRepositoryInterface;
 use GranStudyPlanner\Domain\StudyPlan\StudyPlanStatus;
-use GranStudyPlanner\Domain\WeeklyGoals\IsoWeek;
-use GranStudyPlanner\Domain\WeeklyGoals\WeeklyProgressRepositoryInterface;
 use PDO;
 
-final readonly class MySQLStudyPlanRepository implements StudyPlanRepositoryInterface, WeeklyProgressRepositoryInterface
+final readonly class MySQLStudyPlanRepository implements StudyPlanRepositoryInterface
 {
     public function __construct(private PDO $pdo) {}
 
@@ -115,29 +113,6 @@ final readonly class MySQLStudyPlanRepository implements StudyPlanRepositoryInte
     {
         $stmt = $this->pdo->prepare('SELECT status, COUNT(*) as total FROM study_plans WHERE user_id = :user_id GROUP BY status');
         $stmt->execute(['user_id' => $userId]);
-
-        $base = ['pending' => 0, 'in_progress' => 0, 'done' => 0, 'overdue' => 0];
-        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
-            $base[(string) $row['status']] = (int) $row['total'];
-        }
-
-        return $base;
-    }
-
-    public function countsByUserAndWeek(int $userId, IsoWeek $week): array
-    {
-        $range = $week->range();
-        $stmt = $this->pdo->prepare(
-            'SELECT status, COUNT(*) as total
-             FROM study_plans
-             WHERE user_id = :user_id AND updated_at >= :start AND updated_at < :end
-             GROUP BY status'
-        );
-        $stmt->execute([
-            'user_id' => $userId,
-            'start' => $range['start']->format('Y-m-d H:i:s'),
-            'end' => $range['end']->format('Y-m-d H:i:s'),
-        ]);
 
         $base = ['pending' => 0, 'in_progress' => 0, 'done' => 0, 'overdue' => 0];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {

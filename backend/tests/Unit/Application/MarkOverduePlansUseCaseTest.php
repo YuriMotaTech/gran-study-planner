@@ -6,6 +6,9 @@ namespace GranStudyPlanner\Tests\Unit\Application;
 
 use DateTimeImmutable;
 use GranStudyPlanner\Application\MarkOverduePlans\MarkOverduePlansUseCase;
+use GranStudyPlanner\Domain\ActivityLog\ActivityEntityType;
+use GranStudyPlanner\Domain\ActivityLog\ActivityEventLogInterface;
+use GranStudyPlanner\Domain\ActivityLog\ActivityEventType;
 use GranStudyPlanner\Domain\StudyPlan\DashboardCacheInterface;
 use GranStudyPlanner\Domain\StudyPlan\StudyPlan;
 use GranStudyPlanner\Domain\StudyPlan\StudyPlanRepositoryInterface;
@@ -17,15 +20,25 @@ final class MarkOverduePlansUseCaseTest extends TestCase
     {
         $repo = $this->createMock(StudyPlanRepositoryInterface::class);
         $cache = $this->createMock(DashboardCacheInterface::class);
+        $activityLog = $this->createMock(ActivityEventLogInterface::class);
 
         $plan = new StudyPlan('plan-1', 10, 'Algorithms', new DateTimeImmutable('-2 days'));
 
         $repo->method('findExpiredForOverdueMark')->willReturn([$plan]);
         $repo->expects(self::once())->method('save')->with($plan);
         $cache->expects(self::once())->method('invalidate')->with(10);
+        $now = new DateTimeImmutable();
+        $activityLog->expects(self::once())->method('record')->with(
+            10,
+            ActivityEntityType::STUDY_PLAN,
+            'plan-1',
+            ActivityEventType::MARKED_OVERDUE,
+            ['from' => 'pending'],
+            $now,
+        );
 
-        $useCase = new MarkOverduePlansUseCase($repo, $cache);
-        $updated = $useCase->execute(new DateTimeImmutable());
+        $useCase = new MarkOverduePlansUseCase($repo, $cache, $activityLog);
+        $updated = $useCase->execute($now);
 
         self::assertSame(1, $updated);
     }

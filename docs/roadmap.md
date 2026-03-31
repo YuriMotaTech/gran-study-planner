@@ -20,7 +20,7 @@
 ## v0.3.0 - Product evolution
 - [ ] Recurrence templates
 - [x] Weekly goal tracking and progress charts
-- [ ] Activity event log adapter
+- [x] Activity event log adapter
 - [ ] Notification channels (email/calendar export)
 - [ ] Email notifications: daily study summary (due soon, overdue, and progress by status)
 

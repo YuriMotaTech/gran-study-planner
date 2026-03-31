@@ -5,7 +5,7 @@ Gran Study Planner is a full-stack portfolio project aligned with a junior full-
 
 **Estado atual (resumo)**:
 - Backend hexagonal com `Kernel` HTTP, autenticação por token, cache de dashboard (Redis opcional), rate limiting por usuário/rota, validação de request na camada Interface.
-- Metas semanais (`weekly_goals`) e progresso semanal derivado de `study_plans` com janela ISO; progresso usa `updated_at` como proxy até existir **Activity event log** (ver roadmap v0.3.0).
+- Metas semanais (`weekly_goals`) e **`GET /weekly-progress`** com contagens por **eventos** na tabela `activity_events` (semana ISO): `created` (bucket pelo `status` inicial), `status_changed` (bucket pelo `to`), `marked_overdue` (bucket `overdue`). Eventos `deleted` são gravados para auditoria e **não** entram nesses totais.
 - CI: GitHub Actions roda PHPUnit (somente `tests/Unit` por enquanto) e Vitest + build do frontend.
 - **Referências visuais**: pasta local `ref/` (ignorada no Git) com HTML de referência para alinhar telas; não faz parte do build.
 - **Fluxo Git**: preferir branches de feature e PRs — ver [contributing.md](contributing.md).

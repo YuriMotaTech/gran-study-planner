@@ -103,6 +103,8 @@ A pasta `ref/` está no `.gitignore` e pode conter HTML estático e imagens para
 - `GET /weekly-goals`, `PUT /weekly-goals` (query `week=YYYY-Www` opcional)
 - `GET /weekly-progress` (query `week=YYYY-Www` opcional)
 
+**Weekly progress:** os números em `counts` vêm da agregação de `activity_events` na semana (não mais de `updated_at` em `study_plans`). Migração: `003_create_activity_events.sql`.
+
 ## Testing
 - Backend: `cd backend && composer install && vendor/bin/phpunit`
 - Frontend: `cd frontend && npm install && npm run test -- --run`
