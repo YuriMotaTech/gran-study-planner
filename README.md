@@ -69,6 +69,13 @@ It’s a lightweight “Study Manager” concept, built with a modern stack (**h
 - `frontend/` React app
 - `docs/architecture.md` architecture decisions
 - `docs/roadmap.md` versioned delivery roadmap
+- `docs/contributing.md` Git workflow (feature branches, referências locais)
+
+## Git workflow
+Preferir **branches de feature** e Pull Requests para `main` em vez de commits diretos na `main`. Detalhes em `docs/contributing.md`.
+
+## Referências visuais (local)
+A pasta `ref/` está no `.gitignore` e pode conter HTML estático e imagens para alinhar layout com o plano do projeto; não entra no repositório.
 
 ## Quick start
 1. Copy env file:
@@ -93,6 +100,8 @@ It’s a lightweight “Study Manager” concept, built with a modern stack (**h
 - `PATCH /study-plans/{id}`
 - `DELETE /study-plans/{id}`
 - `GET /dashboard`
+- `GET /weekly-goals`, `PUT /weekly-goals` (query `week=YYYY-Www` opcional)
+- `GET /weekly-progress` (query `week=YYYY-Www` opcional)
 
 ## Testing
 - Backend: `cd backend && composer install && vendor/bin/phpunit`
