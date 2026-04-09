@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "Gran Study Planner",
+    "logout": "Sair",
+    "loading": "Carregando..."
+  },
+  "lang": {
+    "switchToPt": "Mudar para português",
+    "switchToEn": "Mudar para inglês"
+  },
+  "login": {
+    "submit": "Entrar",
+    "emailPlaceholder": "E-mail",
+    "passwordPlaceholder": "Senha"
+  },
+  "filters": {
+    "title": "Filtros",
+    "allStatuses": "Todos os status",
+    "sortByDeadline": "Ordenar por prazo",
+    "sortByStatus": "Ordenar por status",
+    "sortByCreatedAt": "Ordenar por data de criação",
+    "asc": "Crescente",
+    "desc": "Decrescente"
+  },
+  "status": {
+    "pending": "Pendente",
+    "in_progress": "Em andamento",
+    "done": "Concluído",
+    "overdue": "Atrasado"
+  },
+  "studyPlanForm": {
+    "heading": "Novo plano de estudo",
+    "title": "Título",
+    "deadline": "Prazo",
+    "create": "Criar"
+  },
+  "studyPlanList": {
+    "empty": "Nenhum plano ainda.",
+    "deadlinePrefix": "Prazo",
+    "delete": "Excluir"
+  },
+  "weeklyGoals": {
+    "heading": "Metas semanais",
+    "weekPrefix": "Semana",
+    "weekLoading": "...",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "loading": "Carregando dados semanais...",
+    "targets": "Metas",
+    "progress": "Progresso",
+    "footnote": "O progresso semanal usa updated_at como proxy de atividade na semana."
+  }
+}

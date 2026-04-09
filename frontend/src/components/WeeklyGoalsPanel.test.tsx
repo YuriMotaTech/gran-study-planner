@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderWithI18n } from '../test/renderWithI18n';
 import { WeeklyGoalsPanel } from './WeeklyGoalsPanel';
 import { api } from '../services/api';
 
@@ -33,7 +34,7 @@ describe('WeeklyGoalsPanel', () => {
       goals: { pending: 5, in_progress: 2, done: 3, overdue: 4 }
     });
 
-    render(<WeeklyGoalsPanel />);
+    renderWithI18n(<WeeklyGoalsPanel />);
 
     expect(await screen.findByText('Week: 2026-W13')).toBeInTheDocument();
 

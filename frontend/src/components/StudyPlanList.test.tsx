@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { renderWithI18n } from '../test/renderWithI18n';
 import { StudyPlanList } from './StudyPlanList';
 
 describe('StudyPlanList', () => {
@@ -16,7 +17,7 @@ describe('StudyPlanList', () => {
       }
     ];
 
-    render(<StudyPlanList plans={plans} onStatusChange={vi.fn().mockResolvedValue(undefined)} onDelete={vi.fn().mockResolvedValue(undefined)} />);
+    renderWithI18n(<StudyPlanList plans={plans} onStatusChange={vi.fn().mockResolvedValue(undefined)} onDelete={vi.fn().mockResolvedValue(undefined)} />);
 
     expect(screen.getByText('PHP')).toBeInTheDocument();
   });
@@ -24,7 +25,7 @@ describe('StudyPlanList', () => {
   it('triggers status change', () => {
     const onStatusChange = vi.fn().mockResolvedValue(undefined);
 
-    render(
+    renderWithI18n(
       <StudyPlanList
         plans={[{ id: '2', userId: 1, title: 'React', status: 'overdue', deadline: '2026-03-01T00:00:00Z', createdAt: '', updatedAt: '' }]}
         onStatusChange={onStatusChange}

@@ -1,22 +1,19 @@
-import type { StudyPlanStatus } from '../types/StudyPlan';
+import { useI18n } from '../i18n/I18nContext';
 import { useWeeklyGoals } from '../hooks/useWeeklyGoals';
-
-const labels: Record<StudyPlanStatus, string> = {
-  pending: 'Pending',
-  in_progress: 'In progress',
-  done: 'Done',
-  overdue: 'Overdue'
-};
+import type { StudyPlanStatus } from '../types/StudyPlan';
 
 export function WeeklyGoalsPanel() {
+  const { t } = useI18n();
   const { week, goals, progress, loading, saving, error, ordered, updateGoal, save } = useWeeklyGoals();
 
   return (
     <section className="rounded border bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">Weekly goals</h2>
-          <p className="text-sm text-slate-600">Week: {week ?? '...'}</p>
+          <h2 className="text-lg font-semibold">{t('weeklyGoals.heading')}</h2>
+          <p className="text-sm text-slate-600">
+            {t('weeklyGoals.weekPrefix')}: {week ?? t('weeklyGoals.weekLoading')}
+          </p>
         </div>
         <button
           type="button"
@@ -24,24 +21,25 @@ export function WeeklyGoalsPanel() {
           onClick={() => void save()}
           disabled={saving || loading}
         >
-          {saving ? 'Saving...' : 'Save'}
+          {saving ? t('weeklyGoals.saving') : t('weeklyGoals.save')}
         </button>
       </div>
 
       {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
-      {loading && <p className="mb-3 text-sm text-slate-600">Loading weekly data...</p>}
+      {loading && <p className="mb-3 text-sm text-slate-600">{t('weeklyGoals.loading')}</p>}
 
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded border p-3">
-          <h3 className="mb-2 font-medium">Targets</h3>
+          <h3 className="mb-2 font-medium">{t('weeklyGoals.targets')}</h3>
           <div className="space-y-2">
             {ordered.map((status) => (
               <label key={status} className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-slate-700">{labels[status]}</span>
+                <span className="text-slate-700">{t(`status.${status as StudyPlanStatus}`)}</span>
                 <input
                   type="number"
                   min={0}
                   className="w-28 rounded border px-2 py-1 text-right"
+                  aria-label={t(`status.${status as StudyPlanStatus}`)}
                   value={goals[status]}
                   onChange={(e) => updateGoal(status, Number(e.target.value))}
                 />
@@ -51,7 +49,7 @@ export function WeeklyGoalsPanel() {
         </div>
 
         <div className="rounded border p-3">
-          <h3 className="mb-2 font-medium">Progress</h3>
+          <h3 className="mb-2 font-medium">{t('weeklyGoals.progress')}</h3>
           <div className="space-y-2">
             {ordered.map((status) => {
               const current = progress?.counts?.[status] ?? 0;
@@ -61,7 +59,7 @@ export function WeeklyGoalsPanel() {
               return (
                 <div key={status} className="text-sm">
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="text-slate-700">{labels[status]}</span>
+                    <span className="text-slate-700">{t(`status.${status as StudyPlanStatus}`)}</span>
                     <span className="text-slate-700">
                       {current}/{target} ({pct}%)
                     </span>
@@ -73,9 +71,7 @@ export function WeeklyGoalsPanel() {
               );
             })}
           </div>
-          <p className="mt-3 text-xs text-slate-500">
-            Progresso semanal usa <code>updated_at</code> como proxy de atividade na semana.
-          </p>
+          <p className="mt-3 text-xs text-slate-500">{t('weeklyGoals.footnote')}</p>
         </div>
       </div>
     </section>

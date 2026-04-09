@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "Gran Study Planner",
+    "logout": "Logout",
+    "loading": "Loading..."
+  },
+  "lang": {
+    "switchToPt": "Switch to Portuguese",
+    "switchToEn": "Switch to English"
+  },
+  "login": {
+    "submit": "Login",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password"
+  },
+  "filters": {
+    "title": "Filters",
+    "allStatuses": "All statuses",
+    "sortByDeadline": "Sort by deadline",
+    "sortByStatus": "Sort by status",
+    "sortByCreatedAt": "Sort by created at",
+    "asc": "Asc",
+    "desc": "Desc"
+  },
+  "status": {
+    "pending": "Pending",
+    "in_progress": "In progress",
+    "done": "Done",
+    "overdue": "Overdue"
+  },
+  "studyPlanForm": {
+    "heading": "New study plan",
+    "title": "Title",
+    "deadline": "Deadline",
+    "create": "Create"
+  },
+  "studyPlanList": {
+    "empty": "No plans yet.",
+    "deadlinePrefix": "Deadline",
+    "delete": "Delete"
+  },
+  "weeklyGoals": {
+    "heading": "Weekly goals",
+    "weekPrefix": "Week",
+    "weekLoading": "...",
+    "save": "Save",
+    "saving": "Saving...",
+    "loading": "Loading weekly data...",
+    "targets": "Targets",
+    "progress": "Progress",
+    "footnote": "Weekly progress uses updated_at as a proxy for activity in the week."
+  }
+}

@@ -1,3 +1,4 @@
+import { useI18n } from '../i18n/I18nContext';
 import type { StudyPlan, StudyPlanStatus } from '../types/StudyPlan';
 
 type Props = {
@@ -9,8 +10,11 @@ type Props = {
 const statuses: StudyPlanStatus[] = ['pending', 'in_progress', 'done', 'overdue'];
 
 export function StudyPlanList({ plans, onStatusChange, onDelete }: Props) {
+  const { t, localeTag } = useI18n();
+  const dateLocale = localeTag === 'pt-BR' ? 'pt-BR' : 'en-US';
+
   if (plans.length === 0) {
-    return <p className="rounded border border-dashed p-4 text-slate-600">No plans yet.</p>;
+    return <p className="rounded border border-dashed p-4 text-slate-600">{t('studyPlanList.empty')}</p>;
   }
 
   return (
@@ -19,9 +23,11 @@ export function StudyPlanList({ plans, onStatusChange, onDelete }: Props) {
         <li key={plan.id} className="rounded border bg-white p-4 shadow-sm">
           <div className="mb-2 flex items-center justify-between gap-2">
             <strong>{plan.title}</strong>
-            <span className="rounded bg-slate-100 px-2 py-1 text-xs uppercase">{plan.status}</span>
+            <span className="rounded bg-slate-100 px-2 py-1 text-xs uppercase">{t(`status.${plan.status}`)}</span>
           </div>
-          <p className="mb-3 text-sm text-slate-600">Deadline: {new Date(plan.deadline).toLocaleString()}</p>
+          <p className="mb-3 text-sm text-slate-600">
+            {t('studyPlanList.deadlinePrefix')}: {new Date(plan.deadline).toLocaleString(dateLocale)}
+          </p>
           <div className="flex gap-2">
             <select
               aria-label={`status-${plan.id}`}
@@ -30,11 +36,13 @@ export function StudyPlanList({ plans, onStatusChange, onDelete }: Props) {
               onChange={(event) => void onStatusChange(plan.id, event.target.value as StudyPlanStatus)}
             >
               {statuses.map((status) => (
-                <option key={status} value={status}>{status}</option>
+                <option key={status} value={status}>
+                  {t(`status.${status}`)}
+                </option>
               ))}
             </select>
             <button type="button" className="rounded bg-red-600 px-3 py-1 text-white" onClick={() => void onDelete(plan.id)}>
-              Delete
+              {t('studyPlanList.delete')}
             </button>
           </div>
         </li>

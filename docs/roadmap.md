@@ -28,7 +28,7 @@
 - [ ] Seed data command
 - [ ] End-to-end tests
 - [ ] Demo video and architecture walkthrough
-- [ ] Internationalization (PT-BR / EN): toggle de idioma (ex.: bandeira BR para PT-BR, bandeira US para EN)
+- [x] Internationalization (PT-BR / EN): toggle de idioma (ex.: bandeira BR para PT-BR, bandeira US para EN)
 - [ ] Dark mode (tema claro/escuro persistido ou preferência do sistema)
 
 ## Git workflow (contribuição)
