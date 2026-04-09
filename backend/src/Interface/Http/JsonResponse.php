@@ -10,6 +10,7 @@ final class JsonResponse
     /** @param array<string,string> $headers */
     public static function send(array $payload, int $status = 200, array $headers = []): void
     {
+        CorsHeaders::applyResponseOrigin();
         http_response_code($status);
         header('Content-Type: application/json');
         foreach ($headers as $name => $value) {

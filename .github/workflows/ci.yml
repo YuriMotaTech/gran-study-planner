@@ -60,6 +60,7 @@ jobs:
       - name: Backend migrate and serve
         working-directory: backend
         env:
+          CORS_ALLOW_ORIGIN: http://127.0.0.1:5173
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_NAME: gran_study

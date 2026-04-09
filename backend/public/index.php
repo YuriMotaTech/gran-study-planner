@@ -13,6 +13,7 @@ use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyGoalsUseCase;
 use GranStudyPlanner\Application\WeeklyGoals\GetWeeklyProgressUseCase;
 use GranStudyPlanner\Application\WeeklyGoals\UpsertWeeklyGoalsUseCase;
 use GranStudyPlanner\Interface\Http\AuthMiddleware;
+use GranStudyPlanner\Interface\Http\CorsHeaders;
 use GranStudyPlanner\Interface\Http\Kernel;
 use GranStudyPlanner\Interface\Http\Request;
 use GranStudyPlanner\Infrastructure\Auth\SimpleJwtTokenEncoder;
@@ -30,6 +31,11 @@ use GranStudyPlanner\Infrastructure\RateLimiting\RedisRateLimiter;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $env = fn(string $key, string $default = ''): string => $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: $default;
+
+if (trim($env('CORS_ALLOW_ORIGIN', '')) !== '' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    CorsHeaders::sendPreflightNoContent();
+    exit(0);
+}
 
 $pdo = new PDO(
     sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $env('DB_HOST', '127.0.0.1'), $env('DB_PORT', '3306'), $env('DB_NAME', 'gran_study')),

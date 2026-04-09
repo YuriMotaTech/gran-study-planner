@@ -28,6 +28,9 @@ flowchart LR
   cron[CronRunner] --> app
 ```
 
+## CORS (browser dev / E2E)
+If the React app is served from a different origin than the API (different host or port), the browser enforces CORS. When `CORS_ALLOW_ORIGIN` is set (see `.env.example`), the API adds `Access-Control-Allow-Origin` on JSON responses and answers `OPTIONS` with 204 so Playwright and local Vite preview can call the API.
+
 ## Key trade-offs
 - Plain PHP was chosen to make hexagonal boundaries explicit without framework magic.
 - JWT-like local token keeps auth simple for MVP and interview demonstration.
