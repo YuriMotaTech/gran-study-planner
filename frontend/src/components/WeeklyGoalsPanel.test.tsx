@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderWithI18n } from '../test/renderWithI18n';
 import { WeeklyGoalsPanel } from './WeeklyGoalsPanel';
@@ -38,9 +38,14 @@ describe('WeeklyGoalsPanel', () => {
 
     expect(await screen.findByText('Week: 2026-W13')).toBeInTheDocument();
 
+    // Second effect load runs after `week` is set; wait until it finishes or it will
+    // overwrite edited goals via setGoals from the API response.
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save' })).not.toBeDisabled();
+    });
+
     const pendingInput = screen.getByLabelText('Pending') as HTMLInputElement;
     fireEvent.change(pendingInput, { target: { value: '5' } });
-
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(api.upsertWeeklyGoals).toHaveBeenCalledWith(
