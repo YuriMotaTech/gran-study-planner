@@ -26,7 +26,7 @@
 
 ## v0.4.0 - Portfolio polish
 - [x] Seed data command
-- [ ] End-to-end tests
+- [x] End-to-end tests
 - [ ] Demo video and architecture walkthrough
 - [x] Internationalization (PT-BR / EN): toggle de idioma (ex.: bandeira BR para PT-BR, bandeira US para EN)
 - [x] Dark mode (tema claro/escuro persistido ou preferência do sistema)

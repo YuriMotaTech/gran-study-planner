@@ -10,3 +10,5 @@ frontend/dist/
 *.tsbuildinfo
 backend/storage/logs/*.log
 ref/
+frontend/playwright-report/
+frontend/test-results/

@@ -112,6 +112,7 @@ Demo seed inserts study plans whose titles start with `[demo]` (removed and re-c
 ## Testing
 - Backend: `cd backend && composer install && vendor/bin/phpunit`
 - Frontend: `cd frontend && npm install && npm run test -- --run`
+- E2E (Playwright): `cd frontend && npm run test:e2e:install` (once). Start the stack (`docker compose up`), ensure `VITE_API_URL` matches the API (default `http://localhost:8080`). Build and preview the front (`npm run build && npm run preview`), then in another terminal `cd frontend && npm run test:e2e`. CI runs the same flow against MySQL + PHP + Vite preview (see `.github/workflows/ci.yml`).
 
 ## Cron
 Run overdue marker manually:
