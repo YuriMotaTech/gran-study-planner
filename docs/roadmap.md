@@ -22,7 +22,7 @@
 - [x] Weekly goal tracking and progress charts
 - [x] Activity event log adapter
 - [ ] Notification channels (email/calendar export)
-- [ ] Email notifications: daily study summary (due soon, overdue, and progress by status)
+- [x] Email notifications: daily study summary (totals by status via CLI + SMTP; extend later for due-soon lists)
 
 ## v0.4.0 - Portfolio polish
 - [x] Seed data command

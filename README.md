@@ -118,3 +118,14 @@ Run overdue marker manually:
 - `cd backend && php bin/cron_mark_overdue.php`
 
 (For production, schedule this command daily in crontab.)
+
+## Daily summary e-mail (CLI)
+Sends a plain-text and HTML summary with **dashboard totals by status** for `DAILY_SUMMARY_USER_ID` (default `1`, demo user) to `MAIL_TO`, using Symfony Mailer and `MAILER_DSN`.
+
+1. Set in `.env` (see `.env.example`): `MAIL_TO`, `MAILER_DSN`, optionally `MAIL_FROM`, `MAIL_FROM_NAME`, `DAILY_SUMMARY_ENABLED`.
+2. Run (Docker): `docker compose run --rm backend php bin/send_daily_summary.php`
+3. If `DAILY_SUMMARY_ENABLED` is false or `MAIL_TO` / `MAILER_DSN` are empty, the script exits without sending (safe for local dev).
+
+Example `MAILER_DSN` for a local Mailpit/Mailhog SMTP: `smtp://localhost:1025`
+
+Schedule daily next to the overdue job in crontab or your orchestrator.
