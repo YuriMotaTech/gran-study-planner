@@ -11,9 +11,12 @@ export function Dashboard({ stats }: Props) {
   return (
     <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {Object.entries(stats).map(([status, total]) => (
-        <article key={status} className="rounded border bg-white p-3 text-center shadow-sm">
-          <p className="text-xs uppercase text-slate-500">{t(`status.${status as StudyPlanStatus}`)}</p>
-          <p className="text-2xl font-bold">{total}</p>
+        <article
+          key={status}
+          className="rounded border border-slate-200 bg-white p-3 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800"
+        >
+          <p className="text-xs uppercase text-slate-500 dark:text-slate-400">{t(`status.${status as StudyPlanStatus}`)}</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{total}</p>
         </article>
       ))}
     </section>

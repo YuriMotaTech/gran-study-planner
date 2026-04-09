@@ -8,6 +8,15 @@
     "switchToPt": "Mudar para português",
     "switchToEn": "Mudar para inglês"
   },
+  "theme": {
+    "group": "Tema de cores",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "ariaLight": "Usar tema claro",
+    "ariaDark": "Usar tema escuro",
+    "ariaSystem": "Seguir aparência do sistema"
+  },
   "login": {
     "submit": "Entrar",
     "emailPlaceholder": "E-mail",

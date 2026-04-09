@@ -8,6 +8,15 @@
     "switchToPt": "Switch to Portuguese",
     "switchToEn": "Switch to English"
   },
+  "theme": {
+    "group": "Color theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "ariaLight": "Use light theme",
+    "ariaDark": "Use dark theme",
+    "ariaSystem": "Match system appearance"
+  },
   "login": {
     "submit": "Login",
     "emailPlaceholder": "Email",
