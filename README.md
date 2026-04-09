@@ -84,9 +84,13 @@ A pasta `ref/` está no `.gitignore` e pode conter HTML estático e imagens para
    - `docker compose up --build`
 3. Run migration:
    - `docker compose run --rm backend php bin/migrate.php`
-4. Access:
+4. (Optional) Load demo data for the default login user (`user_id = 1`):
+   - `docker compose run --rm backend php bin/seed_demo.php`
+5. Access:
    - API: `http://localhost:8080`
    - Frontend: `http://localhost:5173`
+
+Demo seed inserts study plans whose titles start with `[demo]` (removed and re-created on each run) and weekly goals for the current ISO week.
 
 ## Default login
 - email: `candidate@gran.com`

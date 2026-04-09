@@ -25,7 +25,7 @@
 - [ ] Email notifications: daily study summary (due soon, overdue, and progress by status)
 
 ## v0.4.0 - Portfolio polish
-- [ ] Seed data command
+- [x] Seed data command
 - [ ] End-to-end tests
 - [ ] Demo video and architecture walkthrough
 - [x] Internationalization (PT-BR / EN): toggle de idioma (ex.: bandeira BR para PT-BR, bandeira US para EN)
