@@ -7,5 +7,6 @@ backend/coverage/
 frontend/coverage/
 backend/.phpunit.result.cache
 frontend/dist/
+*.tsbuildinfo
 backend/storage/logs/*.log
 ref/
